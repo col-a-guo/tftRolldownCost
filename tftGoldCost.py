@@ -61,31 +61,50 @@ for i in range(50):
         startstreak = -4 + 4*j
         winrate = .1+.4*j
         runList[i].append(averageRun(winrate, startstreak, startgold, runs))
-        
+    
+xList = []    
+for i in range(26):
+    xList.append(2*i)
+
 x = range(len(runList))
 y = runList
-plt.xlabel("Starting Gold")
+plt.xlabel("Ending Gold")
 plt.ylabel("Gold Lost")
 plt.title("Rolldown Total Costs")
 for i in range(len(y[0])):
-    plt.plot(x,[pt[i] for pt in y],label = "starting streak = " + str(-4+4*i) + ", winrate = " + str((1+4*i)/10))
+    plt.plot(x,[pt[i] for pt in y],label = "starting streak = " + str(-4+4*i) + " wins, winrate = " + str((1+4*i)/10))
 plt.legend()
 plt.show()
 
-marginalCostList = []
-mCostRun = 2
-for i in range(len(runList)-2):
-    marginalCostList.append([runList[i][mCostRun]-runList[i+2][mCostRun]])
-marginalCostList.append([runList[48][mCostRun]])
-marginalCostList.append([runList[49][mCostRun]])
 
-x = range(len(marginalCostList))
-y = marginalCostList
-plt.xlabel("Starting Gold")
-plt.ylabel("Marginal Cost of Rolling")
-plt.title("Rolldown Marginal Costs")
-for i in range(len(y[0])):
-    plt.bar(x,[pt[i] for pt in y],label = "starting streak = " + str(-4+4*mCostRun) + ", winrate = " + str((1+4*mCostRun)/10))
-plt.legend()
+bigList = [['Start Gold', '10% WR', '50% WR', '90% WR']]
+for i in range(52):
+    bigList.append([i])
+    
+
+for mCostRun in range(3):
+    marginalCostList = []
+    for i in range(len(runList)-2):
+        marginalCostList.append([runList[i][mCostRun]-runList[i+2][mCostRun]])
+    marginalCostList.append([runList[48][mCostRun]])
+    marginalCostList.append([runList[49][mCostRun]])
+    marginalCostList = [[0],[0]]+marginalCostList
+    
+
+    x = range(len(marginalCostList))
+    y = marginalCostList
+    plt.xlabel("Starting Gold")
+    plt.ylabel("Cost of Rolling Once")
+    plt.title("Rolldown Individual Roll Costs")
+    plt.xticks(ticks=xList)
+    for i in range(len(y[0])):
+        plt.bar(x,[pt[i] for pt in y],label = "starting streak = " + str(-4+4*mCostRun) + ", winrate = " + str((1+4*mCostRun)/10))
+    plt.legend()
+    plt.show()
+    for i in range(len(marginalCostList)):
+        bigList[i+1] = bigList[i+1]+[round(marginalCostList[i][0],4)]
+
+
+plt.title('Cost of Rolling Once', pad = 650)
+plt.table(bigList, loc='top')
 plt.show()
-        
